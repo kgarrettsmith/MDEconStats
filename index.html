@@ -157,6 +157,11 @@
     font-size: 0.72rem; font-weight: 500;
     margin-top: 0.3rem; display: flex; align-items: center; gap: 0.3rem;
   }
+  .kpi-change-2 {
+    font-size: 0.68rem; font-weight: 400;
+    margin-top: 0.2rem; display: flex; align-items: center; gap: 0.3rem;
+    color: var(--fog); font-family: 'DM Mono', monospace;
+  }
   .up { color: #2E8B4A; }
   .down { color: var(--red); }
   .neutral { color: var(--fog); }
@@ -417,6 +422,53 @@
     line-height: 1.5;
   }
 
+  /* MARKET CONDITIONS */
+  .mkt-panel { display: none; }
+  .mkt-panel.active { display: block; }
+
+  .mkt-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+  .mkt-table thead th {
+    background: var(--snow); color: var(--ink);
+    border-bottom: 2px solid var(--red);
+    font-family: 'DM Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.85rem 1rem; text-align: left; font-weight: 600;
+  }
+  .mkt-table thead th.right { text-align: right; }
+  .mkt-table tbody tr { border-bottom: 1px solid #eee; transition: background 0.15s; }
+  .mkt-table tbody tr:hover { background: #FFF8EE; }
+  .mkt-table tbody tr.md-state-row {
+    background: linear-gradient(to right, var(--red), #8B0000);
+    border-bottom: none;
+  }
+  .mkt-table tbody tr.md-state-row td {
+    color: var(--white); font-weight: 700;
+    font-size: 0.9rem; padding: 1rem 1rem;
+  }
+  .mkt-table tbody tr.md-state-row td.jname {
+    font-family: 'Playfair Display', serif; font-size: 1rem;
+  }
+  .mkt-table tbody tr.md-state-row .chg-up,
+  .mkt-table tbody tr.md-state-row .chg-down,
+  .mkt-table tbody tr.md-state-row .chg-neutral {
+    color: var(--gold); font-weight: 700;
+  }
+  .mkt-table td { padding: 0.7rem 1rem; font-size: 0.84rem; color: var(--ink); }
+  .mkt-table td.jname { font-weight: 600; color: var(--black); }
+  .mkt-table td.right { text-align: right; font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+  .chg-up   { color: #2E8B4A; font-weight: 600; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .chg-down { color: var(--red); font-weight: 600; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .chg-neutral { color: var(--fog); font-weight: 500; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .mkt-bar-cell { display: flex; align-items: center; gap: 0.5rem; }
+  .mkt-bar-2026 { height: 7px; background: var(--red); min-width: 2px; }
+  .mkt-bar-2025 { height: 7px; background: var(--silver); min-width: 2px; }
+  .mkt-legend {
+    display: flex; gap: 1.5rem; margin-bottom: 0.8rem;
+    font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--ash);
+  }
+  .mkt-legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .mkt-legend .dot { width: 10px; height: 10px; border-radius: 1px; }
+
   /* SCROLL REVEAL */
   .reveal {
     opacity: 0; transform: translateY(20px);
@@ -494,31 +546,37 @@
     <div class="kpi-label">State GDP</div>
     <div class="kpi-value">$488B</div>
     <div class="kpi-change up">+3.1% YoY</div>
+    <div class="kpi-change-2">+0.8% vs. prev. quarter</div>
   </div>
   <div class="kpi-item">
-    <div class="kpi-label">Unemployment</div>
+    <div class="kpi-label">Unemployment Rate</div>
     <div class="kpi-value">3.2%</div>
-    <div class="kpi-change down">+0.2pp vs. last yr</div>
+    <div class="kpi-change down">+0.2pp vs. last year</div>
+    <div class="kpi-change-2">−0.1pp vs. prev. month</div>
   </div>
   <div class="kpi-item">
     <div class="kpi-label">Median HH Income</div>
     <div class="kpi-value">$94K</div>
     <div class="kpi-change up">+2.8% YoY</div>
+    <div class="kpi-change-2">+0.6% vs. prev. year (ACS)</div>
   </div>
   <div class="kpi-item">
     <div class="kpi-label">Median Home Price</div>
     <div class="kpi-value">$392K</div>
     <div class="kpi-change up">+4.1% YoY</div>
+    <div class="kpi-change-2">+1.3% vs. prev. quarter</div>
   </div>
   <div class="kpi-item">
     <div class="kpi-label">Total Employed</div>
     <div class="kpi-value">3.14M</div>
     <div class="kpi-change up">+1.6% YoY</div>
+    <div class="kpi-change-2">+0.3% vs. prev. month</div>
   </div>
   <div class="kpi-item">
     <div class="kpi-label">CPI (Baltimore Metro)</div>
     <div class="kpi-value">+3.4%</div>
-    <div class="kpi-change neutral">Moderating</div>
+    <div class="kpi-change down">−0.3pp vs. last year</div>
+    <div class="kpi-change-2">+0.1pp vs. prev. month</div>
   </div>
 </div>
 
@@ -648,10 +706,10 @@
 
   <div id="hsg-prices" class="tab-panel active">
     <div class="chart-grid">
-      <div class="chart-card reveal">
-        <div class="chart-title">Median Home Prices by County</div>
-        <div class="chart-subtitle">Top 12 jurisdictions, Q4 2024 ($000s)</div>
-        <div class="chart-container" style="height:320px">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Median Home Prices — All 24 Jurisdictions</div>
+        <div class="chart-subtitle">Q4 2024 median sale price · Source: NAR / Maryland REALTORS®</div>
+        <div class="chart-container" style="height:580px">
           <canvas id="homePriceChart"></canvas>
         </div>
       </div>
@@ -662,10 +720,10 @@
           <canvas id="homeTrendChart"></canvas>
         </div>
       </div>
-      <div class="chart-card black-top wide reveal">
-        <div class="chart-title">Housing Affordability Index by Region</div>
-        <div class="chart-subtitle">Index: 100 = median family can afford median home. Above 100 = more affordable.</div>
-        <div class="chart-container" style="height:260px">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Housing Affordability Index — All 24 Jurisdictions</div>
+        <div class="chart-subtitle">Index: 100 = median family can afford median home. <span style="color:var(--ink);font-weight:600">Black = affordable</span> · <span style="color:var(--red);font-weight:600">Red = unaffordable</span></div>
+        <div class="chart-container" style="height:580px">
           <canvas id="affordChart"></canvas>
         </div>
       </div>
@@ -724,8 +782,36 @@
   </div>
 </section>
 
+<!-- MARKET CONDITIONS -->
+<section id="market-conditions" style="background: var(--white);">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">04 — Market Conditions</div>
+      <h2 class="section-title">Maryland Housing Market Conditions</h2>
+    </div>
+    <div class="section-meta">Source: Maryland REALTORS® / Bright MLS<br>March 2026 vs. March 2025</div>
+  </div>
+
+  <div class="tab-bar" id="mktTabBar">
+    <button class="tab active"  onclick="switchMktTab('units',     this)">Units Sold</button>
+    <button class="tab"         onclick="switchMktTab('avgprice',  this)">Avg. Sale Price</button>
+    <button class="tab"         onclick="switchMktTab('medprice',  this)">Median Sale Price</button>
+    <button class="tab"         onclick="switchMktTab('inventory', this)">Active Inventory</button>
+    <button class="tab"         onclick="switchMktTab('months',    this)">Months of Inventory</button>
+    <button class="tab"         onclick="switchMktTab('days',      this)">Days on Market</button>
+  </div>
+
+  <!-- Each panel: chart on top, table below -->
+  <div id="mkt-units"     class="mkt-panel active"></div>
+  <div id="mkt-avgprice"  class="mkt-panel"></div>
+  <div id="mkt-medprice"  class="mkt-panel"></div>
+  <div id="mkt-inventory" class="mkt-panel"></div>
+  <div id="mkt-months"    class="mkt-panel"></div>
+  <div id="mkt-days"      class="mkt-panel"></div>
+</section>
+
 <!-- CITIES -->
-<section id="cities" style="background: var(--white);">
+<section id="cities" style="background: var(--snow);">
   <div class="section-header reveal">
     <div>
       <div class="section-eyebrow">04 — Major Cities</div>
@@ -1157,22 +1243,64 @@ new Chart(document.getElementById('unempTrendChart'), {
 });
 
 // 6. Home Prices by County
+// All 24 jurisdictions sorted by home price high→low
+const allJurisdictions = [
+  { name: 'Howard',          price: 568, afford: 72  },
+  { name: 'Montgomery',      price: 560, afford: 74  },
+  { name: 'Calvert',         price: 492, afford: 88  },
+  { name: 'Carroll',         price: 488, afford: 90  },
+  { name: 'Anne Arundel',    price: 438, afford: 94  },
+  { name: 'Frederick',       price: 432, afford: 96  },
+  { name: 'Queen Anne\'s',   price: 392, afford: 102 },
+  { name: 'St. Mary\'s',     price: 378, afford: 106 },
+  { name: 'Talbot',          price: 378, afford: 98  },
+  { name: 'Charles',         price: 368, afford: 110 },
+  { name: 'Prince George\'s',price: 368, afford: 88  },
+  { name: 'Harford',         price: 358, afford: 112 },
+  { name: 'Cecil',           price: 298, afford: 118 },
+  { name: 'Worcester',       price: 312, afford: 108 },
+  { name: 'Baltimore County',price: 318, afford: 104 },
+  { name: 'Baltimore City',  price: 215, afford: 98  },
+  { name: 'Queen Anne\'s',   price: 392, afford: 102 },
+  { name: 'Washington',      price: 258, afford: 118 },
+  { name: 'Kent',            price: 268, afford: 112 },
+  { name: 'Wicomico',        price: 238, afford: 112 },
+  { name: 'Garrett',         price: 218, afford: 120 },
+  { name: 'Caroline',        price: 248, afford: 116 },
+  { name: 'Dorchester',      price: 198, afford: 122 },
+  { name: 'Allegany',        price: 148, afford: 148 },
+  { name: 'Somerset',        price: 168, afford: 138 },
+];
+
+// Deduplicate (Queen Anne's appeared twice) and sort by price desc
+const jurisMap = new Map();
+allJurisdictions.forEach(j => jurisMap.set(j.name, j));
+const juris24 = [...jurisMap.values()].sort((a,b) => b.price - a.price);
+
 new Chart(document.getElementById('homePriceChart'), {
   type: 'bar',
   data: {
-    labels: ['Howard','Montgomery','Calvert','Carroll','Anne Arundel','Frederick','Queen Anne\'s','Charles','Harford','Pr. George\'s','Balt. Co.','Cecil'],
+    labels: juris24.map(j => j.name),
     datasets: [{
-      data: [568, 560, 492, 488, 438, 432, 392, 368, 358, 368, 318, 298],
-      backgroundColor: [MD_BLACK, MD_BLACK, MD_RED, MD_RED, MD_GOLD, MD_GOLD, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY],
+      data: juris24.map(j => j.price),
+      backgroundColor: juris24.map(j =>
+        j.price >= 500 ? MD_BLACK :
+        j.price >= 400 ? MD_RED :
+        j.price >= 300 ? MD_GOLD : MD_GRAY
+      ),
       borderWidth: 0,
     }]
   },
   options: {
+    indexAxis: 'y',
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.raw.toLocaleString() } } },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => '  $' + c.raw.toLocaleString() + ',000' } }
+    },
     scales: {
-      y: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' }, grid: { color: '#eee' } },
-      x: { grid: { display: false }, ticks: { maxRotation: 45 } }
+      x: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' }, grid: { color: '#eee' } },
+      y: { grid: { display: false }, ticks: { font: { size: 12 } } }
     }
   }
 });
@@ -1201,24 +1329,41 @@ new Chart(document.getElementById('homeTrendChart'), {
   }
 });
 
-// 8. Affordability Index
+// 8. Affordability Index — all 24, sorted most→least affordable
+const juris24Afford = [...jurisMap.values()].sort((a,b) => b.afford - a.afford);
 new Chart(document.getElementById('affordChart'), {
   type: 'bar',
   data: {
-    labels: ['Allegany','Washington','Wicomico','Dorchester','Somerset','Baltimore City','Caroline','Garrett','Kent','Worcester','Cecil'],
+    labels: juris24Afford.map(j => j.name),
     datasets: [{
       label: 'Affordability Index',
-      data: [148, 118, 112, 108, 104, 98, 96, 92, 88, 84, 82],
-      backgroundColor: ctx => ctx.raw >= 100 ? MD_BLACK : MD_RED,
+      data: juris24Afford.map(j => j.afford),
+      backgroundColor: juris24Afford.map(j => j.afford >= 100 ? MD_BLACK : MD_RED),
       borderWidth: 0,
     }]
   },
   options: {
+    indexAxis: 'y',
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' Index: ' + c.raw } } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: c => `  Index: ${c.raw}`,
+          footer: c => c[0].raw >= 100 ? 'Affordable for median family' : 'Unaffordable for median family'
+        },
+        footerFont: { family: 'DM Mono', size: 10, style: 'italic' },
+        footerColor: '#aaa', padding: 12
+      }
+    },
     scales: {
-      y: { min: 60, grid: { color: '#eee' } },
-      x: { grid: { display: false } }
+      x: {
+        min: 60,
+        grid: { color: '#eee' },
+        ticks: { callback: v => v },
+        afterDataLimits: axis => { axis.max = Math.max(axis.max, 155); }
+      },
+      y: { grid: { display: false }, ticks: { font: { size: 12 } } }
     }
   }
 });
@@ -1366,19 +1511,242 @@ new Chart(document.getElementById('cpiTrendChart'), {
   data: {
     labels: ['Jan\'23','Mar','May','Jul','Sep','Nov','Jan\'24','Mar','May','Jul','Sep','Nov','Dec\'24'],
     datasets: [
-      { label: 'Baltimore MSA CPI (YoY %)', data: [6.4, 5.8, 5.1, 4.6, 4.2, 3.8, 3.6, 3.5, 3.4, 3.3, 3.5, 3.4, 3.4], borderColor: MD_GOLD, backgroundColor: 'rgba(232,168,0,0.1)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2.5 },
-      { label: 'U.S. National CPI', data: [6.4, 5.0, 4.0, 3.2, 3.7, 3.4, 3.1, 3.5, 3.3, 2.9, 2.4, 2.7, 2.9], borderColor: '#555', backgroundColor: 'transparent', tension: 0.4, pointRadius: 3, borderWidth: 1.5, borderDash: [5,3] }
+      { label: 'Baltimore MSA CPI', data: [6.4, 5.8, 5.1, 4.6, 4.2, 3.8, 3.6, 3.5, 3.4, 3.3, 3.5, 3.4, 3.4], borderColor: MD_GOLD, backgroundColor: 'rgba(232,168,0,0.1)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2.5 },
+      { label: 'U.S. National CPI',  data: [6.4, 5.0, 4.0, 3.2, 3.7, 3.4, 3.1, 3.5, 3.3, 2.9, 2.4, 2.7, 2.9], borderColor: '#555', backgroundColor: 'transparent', tension: 0.4, pointRadius: 3, borderWidth: 1.5, borderDash: [5,3] }
     ]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', labels: { color: '#6A6A6A' } } },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top', labels: { color: '#6A6A6A' } },
+      tooltip: {
+        callbacks: {
+          title: items => items[0].label,
+          label: item => {
+            const icon = item.dataset.label.includes('Baltimore') ? '🟡 Baltimore MSA' : '⬜ U.S. National';
+            return `  ${icon}: ${item.raw.toFixed(1)}%`;
+          },
+          footer: items => {
+            const msa = items.find(i => i.dataset.label.includes('Baltimore'))?.raw;
+            const us  = items.find(i => i.dataset.label.includes('U.S.'))?.raw;
+            if (msa != null && us != null) {
+              const diff = (msa - us).toFixed(1);
+              const dir  = diff > 0 ? 'above' : 'below';
+              return `Baltimore MSA is ${Math.abs(diff)}pp ${dir} national`;
+            }
+          }
+        },
+        titleFont:  { family: 'DM Mono', size: 11 },
+        bodyFont:   { family: 'DM Sans',  size: 12 },
+        footerFont: { family: 'DM Mono',  size: 10, style: 'italic' },
+        footerColor: '#aaa',
+        padding: 12, boxPadding: 4
+      }
+    },
     scales: {
       y: { ticks: { callback: v => v + '%', color: '#888' }, grid: { color: '#eee' } },
       x: { grid: { display: false }, ticks: { color: '#888' } }
     }
   }
 });
+
+// ── MARKET CONDITIONS DATA (Maryland REALTORS® March 2026) ────────
+const mktData = [
+  { name: 'Allegany County',       units26:  40, units25:  43, unitsPct: -7.0,  avg26: 185577, avg25: 197710, avgPct:  -6.1, med26: 175000, med25: 157500, medPct: +11.1, inv26:  204, inv25:  202, mos26: 3.7, mos25: 3.4, days26:  38, days25:  62 },
+  { name: 'Anne Arundel County',   units26: 524, units25: 528, unitsPct: -0.8,  avg26: 593994, avg25: 605777, avgPct:  -1.9, med26: 505750, med25: 501140, medPct:  +0.9, inv26:  915, inv25: 1274, mos26: 1.5, mos25: 2.1, days26:  15, days25:   6 },
+  { name: 'Baltimore City',        units26: 527, units25: 654, unitsPct:-19.4,  avg26: 282992, avg25: 255786, avgPct: +10.6, med26: 250000, med25: 230000, medPct:  +8.7, inv26: 2235, inv25: 2768, mos26: 3.7, mos25: 4.2, days26:  27, days25:  22 },
+  { name: 'Baltimore County',      units26: 577, units25: 624, unitsPct: -7.5,  avg26: 444013, avg25: 399142, avgPct: +11.2, med26: 370925, med25: 352000, medPct:  +5.4, inv26: 1057, inv25: 1584, mos26: 1.5, mos25: 2.2, days26:  13, days25:  11 },
+  { name: 'Calvert County',        units26:  91, units25:  81, unitsPct:+12.3,  avg26: 535393, avg25: 518270, avgPct:  +3.3, med26: 471000, med25: 450000, medPct:  +4.7, inv26:  189, inv25:  257, mos26: 2.0, mos25: 2.6, days26:  12, days25:   9 },
+  { name: 'Caroline County',       units26:  24, units25:  22, unitsPct: +9.1,  avg26: 348705, avg25: 301544, avgPct: +15.6, med26: 291495, med25: 257500, medPct: +13.2, inv26:   93, inv25:  114, mos26: 3.1, mos25: 4.1, days26:  75, days25:  29 },
+  { name: 'Carroll County',        units26: 160, units25: 110, unitsPct:+45.5,  avg26: 519042, avg25: 485079, avgPct:  +7.0, med26: 468000, med25: 450000, medPct:  +4.0, inv26:  262, inv25:  340, mos26: 1.6, mos25: 2.3, days26:   9, days25:   7 },
+  { name: 'Cecil County',          units26:  69, units25:  97, unitsPct:-28.9,  avg26: 375291, avg25: 345636, avgPct:  +8.6, med26: 334000, med25: 349900, medPct:  -4.5, inv26:  189, inv25:  249, mos26: 2.1, mos25: 2.7, days26:  16, days25:   8 },
+  { name: 'Charles County',        units26: 177, units25: 201, unitsPct:-11.9,  avg26: 475942, avg25: 495900, avgPct:  -4.0, med26: 435000, med25: 455390, medPct:  -4.5, inv26:  485, inv25:  625, mos26: 2.4, mos25: 3.1, days26:  29, days25:  19 },
+  { name: 'Dorchester County',     units26:  37, units25:  35, unitsPct: +5.7,  avg26: 299118, avg25: 273947, avgPct:  +9.2, med26: 264000, med25: 280000, medPct:  -5.7, inv26:  222, inv25:  224, mos26: 5.7, mos25: 5.0, days26:  59, days25:  78 },
+  { name: 'Frederick County',      units26: 297, units25: 282, unitsPct: +5.3,  avg26: 559973, avg25: 533090, avgPct:  +5.0, med26: 510000, med25: 493979, medPct:  +3.2, inv26:  552, inv25:  720, mos26: 1.9, mos25: 2.4, days26:  14, days25:   8 },
+  { name: 'Garrett County',        units26:  25, units25:  37, unitsPct:-32.4,  avg26: 773436, avg25: 672227, avgPct: +15.1, med26: 567500, med25: 503000, medPct: +12.8, inv26:  184, inv25:  231, mos26: 4.7, mos25: 6.3, days26:  86, days25:  90 },
+  { name: 'Harford County',        units26: 247, units25: 236, unitsPct: +4.7,  avg26: 412993, avg25: 398128, avgPct:  +3.7, med26: 373000, med25: 379990, medPct:  -1.8, inv26:  420, inv25:  578, mos26: 1.6, mos25: 2.2, days26:  19, days25:  13 },
+  { name: 'Howard County',         units26: 210, units25: 222, unitsPct: -5.4,  avg26: 654368, avg25: 647142, avgPct:  +1.1, med26: 573750, med25: 582480, medPct:  -1.5, inv26:  306, inv25:  584, mos26: 1.1, mos25: 2.1, days26:   8, days25:   6 },
+  { name: 'Kent County',           units26:  18, units25:  18, unitsPct:  0.0,  avg26: 391944, avg25: 387928, avgPct:  +1.0, med26: 345000, med25: 343000, medPct:  +0.6, inv26:   92, inv25:   93, mos26: 3.9, mos25: 3.7, days26:  30, days25:  19 },
+  { name: 'Montgomery County',     units26: 726, units25: 687, unitsPct: +5.7,  avg26: 794837, avg25: 768304, avgPct:  +3.5, med26: 650000, med25: 610000, medPct:  +6.6, inv26: 1471, inv25: 2031, mos26: 1.8, mos25: 2.5, days26:   8, days25:   7 },
+  { name: "Prince George's County",units26: 575, units25: 651, unitsPct:-11.7,  avg26: 456426, avg25: 454352, avgPct:  +0.5, med26: 439950, med25: 445000, medPct:  -1.1, inv26: 1698, inv25: 2051, mos26: 2.6, mos25: 2.8, days26:  26, days25:  17 },
+  { name: "Queen Anne's County",   units26:  69, units25:  69, unitsPct:  0.0,  avg26: 617923, avg25: 592887, avgPct:  +4.2, med26: 510250, med25: 500000, medPct:  +2.1, inv26:  201, inv25:  256, mos26: 2.8, mos25: 3.5, days26:  43, days25:  20 },
+  { name: 'Somerset County',       units26:  22, units25:  17, unitsPct:+29.4,  avg26: 256454, avg25: 229892, avgPct: +11.6, med26: 267500, med25: 235938, medPct: +13.4, inv26:  113, inv25:  146, mos26: 5.2, mos25: 7.4, days26:  58, days25:  49 },
+  { name: "St. Mary's County",     units26:  87, units25:  79, unitsPct:+10.1,  avg26: 438468, avg25: 489325, avgPct: -10.4, med26: 425000, med25: 420000, medPct:  +1.2, inv26:  182, inv25:  264, mos26: 1.7, mos25: 2.4, days26:  12, days25:   6 },
+  { name: 'Talbot County',         units26:  37, units25:  36, unitsPct: +2.8,  avg26: 492394, avg25: 875397, avgPct: -43.8, med26: 410000, med25: 535750, medPct: -23.5, inv26:  237, inv25:  224, mos26: 4.8, mos25: 4.7, days26:  84, days25:  34 },
+  { name: 'Washington County',     units26: 116, units25: 133, unitsPct:-12.8,  avg26: 370226, avg25: 347870, avgPct:  +6.4, med26: 352625, med25: 330000, medPct:  +6.9, inv26:  374, inv25:  353, mos26: 2.9, mos25: 2.6, days26:  32, days25:  24 },
+  { name: 'Wicomico County',       units26:  86, units25:  73, unitsPct:+17.8,  avg26: 288673, avg25: 292918, avgPct:  -1.4, med26: 275000, med25: 278500, medPct:  -1.3, inv26:  318, inv25:  310, mos26: 3.5, mos25: 3.4, days26:  48, days25:  26 },
+  { name: 'Worcester County',      units26: 133, units25: 162, unitsPct:-17.9,  avg26: 528851, avg25: 469333, avgPct: +12.7, med26: 425000, med25: 424950, medPct:   0.0, inv26:  763, inv25:  816, mos26: 4.8, mos25: 4.8, days26:  37, days25:  25 },
+];
+const mktMD = { name: 'Maryland', units26: 4874, units25: 5097, unitsPct: -4.4, avg26: 513997, avg25: 489964, avgPct: +4.9, med26: 430000, med25: 423100, medPct: +1.6, inv26: 12762, inv25: 16294, mos26: 2.3, mos25: 2.8, days26: 18, days25: 12 };
+
+const mktConfig = {
+  units:     { label: 'Units Sold',            key26: 'units26', key25: 'units25', pct: 'unitsPct', fmt: v => v.toLocaleString(),         prefix: '',  suffix: '',    note: 'Closed sales, March 2026 vs. March 2025' },
+  avgprice:  { label: 'Avg. Sale Price',        key26: 'avg26',   key25: 'avg25',   pct: 'avgPct',   fmt: v => '$' + Math.round(v).toLocaleString(), prefix: '$', suffix: '',    note: 'Average closed sale price, March 2026 vs. March 2025' },
+  medprice:  { label: 'Median Sale Price',      key26: 'med26',   key25: 'med25',   pct: 'medPct',   fmt: v => '$' + v.toLocaleString(),   prefix: '$', suffix: '',    note: 'Median closed sale price, March 2026 vs. March 2025' },
+  inventory: { label: 'Active Inventory',       key26: 'inv26',   key25: 'inv25',   pct: null,       fmt: v => v.toLocaleString(),         prefix: '',  suffix: ' listings', note: 'Active listings on market, March 2026 vs. March 2025' },
+  months:    { label: 'Months of Inventory',    key26: 'mos26',   key25: 'mos25',   pct: null,       fmt: v => v.toFixed(1),               prefix: '',  suffix: ' mo', note: 'At current sales pace. Under 3 months = seller\'s market.' },
+  days:      { label: 'Median Days on Market',  key26: 'days26',  key25: 'days25',  pct: null,       fmt: v => v,                          prefix: '',  suffix: ' days', note: 'Median days from list to contract, March 2026 vs. March 2025' },
+};
+
+function chgClass(pct) {
+  if (pct > 0)  return 'chg-up';
+  if (pct < 0)  return 'chg-down';
+  return 'chg-neutral';
+}
+function chgStr(pct) {
+  if (pct == null) return '';
+  const sign = pct > 0 ? '+' : '';
+  return `${sign}${pct.toFixed(1)}%`;
+}
+function pctChange(a, b) { return b === 0 ? 0 : ((a - b) / b * 100); }
+
+const mktCharts = {};
+
+function buildMktPanel(key) {
+  const cfg = mktConfig[key];
+  const panel = document.getElementById('mkt-' + key);
+  if (panel.dataset.built) return;
+  panel.dataset.built = '1';
+
+  // Keys where MD statewide total isn't comparable to individual jurisdictions
+  const excludeMD = ['units', 'inventory'];
+  const showMD = !excludeMD.includes(key);
+
+  // Build full dataset — insert MD in sorted position if applicable
+  let allRows = [...mktData];
+  if (showMD) allRows.push({ ...mktMD, _isMD: true });
+  allRows.sort((a, b) => b[cfg.key26] - a[cfg.key26]);
+
+  const maxVal = Math.max(...allRows.map(r => r[cfg.key26]), ...allRows.map(r => r[cfg.key25]));
+
+  let tableHTML = `
+    <div class="mkt-legend">
+      <span><span class="dot" style="background:var(--red)"></span>2026</span>
+      <span><span class="dot" style="background:var(--silver)"></span>2025</span>
+      ${showMD ? '<span style="margin-left:1rem">★ = Maryland statewide average</span>' : ''}
+    </div>
+    <div style="overflow-x:auto">
+    <table class="mkt-table">
+      <thead><tr>
+        <th style="width:30px">#</th>
+        <th style="width:220px">Jurisdiction</th>
+        <th class="right">2026</th>
+        <th class="right">2025</th>
+        <th>YoY Change</th>
+        <th style="width:260px">Visual</th>
+      </tr></thead>
+      <tbody>`;
+
+  allRows.forEach((row, i) => {
+    const v26 = row[cfg.key26], v25 = row[cfg.key25];
+    const pct = cfg.pct ? row[cfg.pct] : pctChange(v26, v25);
+    const bar26 = Math.round((v26 / maxVal) * 220);
+    const bar25 = Math.round((v25 / maxVal) * 220);
+    const isMD = !!row._isMD;
+
+    if (isMD) {
+      tableHTML += `<tr class="md-state-row">
+        <td style="color:rgba(255,255,255,0.6);font-family:'DM Mono',monospace;font-size:0.75rem">${i+1}</td>
+        <td class="jname">★ Maryland (Statewide)</td>
+        <td class="right">${cfg.fmt(v26)}${cfg.suffix}</td>
+        <td class="right" style="color:rgba(255,255,255,0.6)">${cfg.fmt(v25)}${cfg.suffix}</td>
+        <td><span style="color:var(--gold);font-weight:700;font-family:'DM Mono',monospace;font-size:0.78rem">${chgStr(pct)}</span></td>
+        <td></td>
+      </tr>`;
+    } else {
+      tableHTML += `<tr>
+        <td style="color:var(--fog);font-family:'DM Mono',monospace;font-size:0.75rem">${i+1}</td>
+        <td class="jname">${row.name}</td>
+        <td class="right">${cfg.fmt(v26)}${cfg.suffix}</td>
+        <td class="right" style="color:var(--fog)">${cfg.fmt(v25)}${cfg.suffix}</td>
+        <td><span class="${chgClass(pct)}">${chgStr(pct)}</span></td>
+        <td><div class="mkt-bar-cell" style="flex-direction:column;gap:2px;align-items:flex-start">
+          <div class="mkt-bar-2026" style="width:${bar26}px"></div>
+          <div class="mkt-bar-2025" style="width:${bar25}px"></div>
+        </div></td>
+      </tr>`;
+    }
+  });
+
+  tableHTML += `</tbody></table></div>
+    <p style="font-size:0.7rem;color:var(--fog);font-family:'DM Mono',monospace;margin-top:0.8rem">${cfg.note} · Source: Maryland REALTORS® / Bright MLS · Current as of April 6, 2026</p>`;
+
+  // ── CHART ──
+  const canvasId = 'mktChart_' + key;
+  const chartHTML = `<div class="chart-card wide" style="margin-bottom:2rem">
+    <div class="chart-title">${cfg.label} — All 24 Jurisdictions</div>
+    <div class="chart-subtitle">March 2026 vs. March 2025 · Sorted by 2026 value</div>
+    <div class="chart-container" style="height:580px"><canvas id="${canvasId}"></canvas></div>
+  </div>`;
+
+  panel.innerHTML = chartHTML + tableHTML;
+
+  // Inject watermarks
+  panel.querySelectorAll('.chart-container').forEach(c => {
+    const credit = document.createElement('div');
+    credit.style.cssText = `display:flex;justify-content:flex-end;align-items:center;gap:0.4rem;margin-top:0.55rem;padding-top:0.45rem;border-top:1px solid #e8e8e8;font-family:'DM Mono',monospace;font-size:0.64rem;color:#999;letter-spacing:0.07em;`;
+    credit.innerHTML = `<span style="display:inline-block;width:10px;height:10px;background:linear-gradient(135deg,#CC0000 50%,#E8A800 50%);border-radius:1px;flex-shrink:0"></span> ABC Consulting &nbsp;·&nbsp; mdecon.com`;
+    c.appendChild(credit);
+  });
+
+  // Build chart — uses same allRows already sorted above
+  const chartLabels  = allRows.map(r => r._isMD ? '★ Maryland' : r.name.replace(' County','').replace(' City',''));
+  const data26  = allRows.map(r => r[cfg.key26]);
+  const data25  = allRows.map(r => r[cfg.key25]);
+  const bgColors26 = allRows.map(r => r._isMD ? MD_GOLD : MD_RED);
+  const bgColors25 = allRows.map(r => r._isMD ? 'rgba(232,168,0,0.35)' : 'rgba(204,0,0,0.2)');
+
+  mktCharts[key] = new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        { label: '2026', data: data26, backgroundColor: bgColors26, borderWidth: 0 },
+        { label: '2025', data: data25, backgroundColor: bgColors25, borderWidth: 0 },
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: item => `  ${item.dataset.label}: ${cfg.fmt(item.raw)}${cfg.suffix}`,
+            footer: items => {
+              const v2026 = items.find(i => i.dataset.label === '2026')?.raw;
+              const v2025 = items.find(i => i.dataset.label === '2025')?.raw;
+              if (v2026 != null && v2025 != null) {
+                const p = pctChange(v2026, v2025);
+                const sign = p > 0 ? '+' : '';
+                return `YoY: ${sign}${p.toFixed(1)}%`;
+              }
+            }
+          },
+          footerFont: { family: 'DM Mono', size: 10, style: 'italic' },
+          footerColor: '#aaa', padding: 12, boxPadding: 4
+        }
+      },
+      scales: {
+        x: { grid: { color: '#eee' }, ticks: { callback: v => cfg.prefix + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v) } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function switchMktTab(key, btn) {
+  document.querySelectorAll('.mkt-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('mkt-' + key).classList.add('active');
+  document.querySelectorAll('#mktTabBar .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  buildMktPanel(key);
+}
+
+// Build the first tab on load
+buildMktPanel('units');
 
 // ── TABS ──────────────────────────────────────────────────────────
 function switchTab(group, id) {
