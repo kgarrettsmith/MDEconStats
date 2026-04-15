@@ -1,1 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maryland Economic Indicators | [Your Consultancy Name]</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #CC0000;
+    --red-light: #E8272A;
+    --gold: #E8A800;
+    --gold-light: #F5C842;
+    --black: #0A0A0A;
+    --charcoal: #1A1A1A;
+    --ink: #2D2D2D;
+    --ash: #4A4A4A;
+    --fog: #9A9A9A;
+    --silver: #D4D4D4;
+    --snow: #F7F5F0;
+    --white: #FFFFFF;
+    --crosshatch: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40L40 0M-5 5L5-5M35 45L45 35' stroke='%23CC0000' stroke-width='0.4' opacity='0.15'/%3E%3C/svg%3E");
+  }
 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--snow);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ──────────── NAV ──────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--white);
+    border-bottom: 3px solid var(--red);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 60px;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .nav-flag {
+    width: 32px; height: 20px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    overflow: hidden; border-radius: 2px;
+  }
+  .nf1 { background: var(--gold); }
+  .nf2 { background: var(--ink); }
+  .nf3 { background: var(--ink); }
+  .nf4 { background: var(--gold); }
+  .nav-brand-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.02em;
+  }
+  .nav-brand-text span { color: var(--red); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: var(--ash); text-decoration: none; font-size: 0.78rem;
+    font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--red); }
+  .nav-cta {
+    background: var(--red); color: var(--white) !important;
+    padding: 0.4rem 1.1rem; border-radius: 2px;
+    font-size: 0.75rem !important;
+  }
+  .nav-cta:hover { background: var(--red-light); color: var(--white) !important; }
+
+  /* ──────────── HERO ──────────── */
+  .hero {
+    margin-top: 60px;
+    background: var(--white);
+    border-bottom: 1px solid var(--silver);
+    padding: 5rem 2.5rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+    background: linear-gradient(to bottom, var(--red) 50%, var(--gold) 50%);
+  }
+  .hero::after {
+    content: 'MARYLAND';
+    position: absolute; right: -1rem; top: 50%; transform: translateY(-50%) rotate(90deg);
+    font-family: 'Playfair Display', serif; font-size: 9rem; font-weight: 900;
+    color: rgba(204,0,0,0.04); letter-spacing: 0.1em; white-space: nowrap;
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; color: var(--red); letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 1.1rem;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--red);
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 900; color: var(--ink);
+    line-height: 0.95; letter-spacing: -0.02em;
+    max-width: 820px;
+  }
+  .hero-title em {
+    font-style: normal; color: var(--red);
+    display: block;
+  }
+  .hero-subtitle {
+    margin-top: 1.5rem;
+    color: var(--ash); font-size: 1rem; font-weight: 300;
+    max-width: 520px; line-height: 1.65;
+  }
+  .hero-subtitle strong { color: var(--ink); font-weight: 500; }
+  .hero-updated {
+    margin-top: 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; color: var(--fog); letter-spacing: 0.1em;
+  }
+
+  /* KPI STRIP */
+  .kpi-strip {
+    background: var(--snow);
+    border-top: 1px solid var(--silver);
+    border-bottom: 3px solid var(--red);
+    display: grid; grid-template-columns: repeat(6, 1fr);
+  }
+  .kpi-item {
+    padding: 1.5rem 1.8rem;
+    border-right: 1px solid var(--silver);
+    position: relative;
+    transition: background 0.2s;
+  }
+  .kpi-item:hover { background: var(--white); }
+  .kpi-item:last-child { border-right: none; }
+  .kpi-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.63rem; color: var(--fog);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem; font-weight: 700;
+    color: var(--ink); line-height: 1;
+  }
+  .kpi-change {
+    font-size: 0.72rem; font-weight: 500;
+    margin-top: 0.3rem; display: flex; align-items: center; gap: 0.3rem;
+  }
+  .up { color: #2E8B4A; }
+  .down { color: var(--red); }
+  .neutral { color: var(--fog); }
+  .kpi-change::before { font-size: 0.8rem; }
+  .up::before { content: '▲'; }
+  .down::before { content: '▼'; }
+
+  /* ──────────── SECTIONS ──────────── */
+  section { padding: 5rem 2.5rem; }
+
+  .section-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 3rem; padding-bottom: 1rem;
+    border-bottom: 1px solid var(--silver);
+  }
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; color: var(--red);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem; font-weight: 700;
+    color: var(--black); line-height: 1.1;
+  }
+  .section-meta {
+    font-size: 0.78rem; color: var(--fog);
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex; gap: 0; margin-bottom: 2.5rem;
+    border-bottom: 2px solid var(--silver);
+  }
+  .tab {
+    padding: 0.7rem 1.5rem; font-size: 0.8rem;
+    font-weight: 600; letter-spacing: 0.04em;
+    cursor: pointer; color: var(--ash);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab:hover { color: var(--black); }
+  .tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+  /* CHART GRID */
+  .chart-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .chart-card {
+    background: var(--white);
+    border: 1px solid var(--silver);
+    border-top: 3px solid var(--red);
+    padding: 1.8rem;
+    position: relative;
+  }
+  .chart-card.gold-top { border-top-color: var(--gold); }
+  .chart-card.black-top { border-top-color: var(--black); }
+  .chart-card.wide { grid-column: 1 / -1; }
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700; color: var(--black);
+    margin-bottom: 0.25rem;
+  }
+  .chart-subtitle {
+    font-size: 0.75rem; color: var(--fog);
+    font-family: 'DM Mono', monospace; margin-bottom: 1.5rem;
+  }
+  .chart-container { position: relative; }
+
+  /* COUNTY TABLE */
+  .county-section { background: var(--white); }
+  .county-controls {
+    display: flex; gap: 1rem; margin-bottom: 2rem; align-items: center;
+    flex-wrap: wrap;
+  }
+  .metric-select {
+    padding: 0.55rem 1rem; border: 1px solid var(--silver);
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    color: var(--ink); background: var(--snow); cursor: pointer;
+    appearance: none; border-radius: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23CC0000'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.75rem center;
+    padding-right: 2.5rem; min-width: 220px;
+  }
+  .sort-btn {
+    padding: 0.55rem 1.1rem; border: 1px solid var(--silver);
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+    font-weight: 600; background: var(--snow); cursor: pointer;
+    color: var(--ink); letter-spacing: 0.04em; transition: all 0.15s;
+  }
+  .sort-btn:hover, .sort-btn.active {
+    background: var(--black); color: var(--white); border-color: var(--black);
+  }
+  .search-input {
+    padding: 0.55rem 1rem; border: 1px solid var(--silver);
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    color: var(--ink); background: var(--snow); flex: 1; min-width: 180px;
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--red); }
+
+  .county-table { width: 100%; border-collapse: collapse; }
+  .county-table thead th {
+    background: var(--snow); color: var(--ink);
+    border-bottom: 2px solid var(--red);
+    font-family: 'DM Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.85rem 1rem; text-align: left; font-weight: 600;
+    cursor: pointer; user-select: none;
+  }
+  .county-table thead th:hover { background: #eee; }
+  .county-table thead th.sorted { color: var(--red); }
+  .county-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background 0.15s;
+  }
+  .county-table tbody tr:hover { background: #FFF8EE; }
+  .county-table td {
+    padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--ink);
+  }
+  .county-table td:first-child { font-weight: 600; color: var(--black); }
+  .bar-cell { display: flex; align-items: center; gap: 0.6rem; }
+  .mini-bar {
+    height: 6px; background: var(--red); border-radius: 0;
+    min-width: 2px; transition: width 0.4s ease;
+  }
+  .mini-bar.gold { background: var(--gold); }
+  .mini-bar.dark { background: var(--black); }
+  .rank-badge {
+    display: inline-block; width: 22px; height: 22px;
+    background: var(--snow); border: 1px solid var(--silver);
+    border-radius: 50%; text-align: center; line-height: 22px;
+    font-size: 0.65rem; font-weight: 700; color: var(--ash);
+  }
+  .rank-badge.top3 { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  /* CITY SPOTLIGHTS */
+  .city-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+  }
+  .city-card {
+    background: var(--white); border: 1px solid var(--silver);
+    padding: 1.6rem; position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .city-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .city-card::before {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(to right, var(--red), var(--gold));
+  }
+  .city-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700; color: var(--black);
+    margin-bottom: 0.15rem;
+  }
+  .city-role {
+    font-size: 0.7rem; color: var(--fog);
+    font-family: 'DM Mono', monospace; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 1.2rem;
+  }
+  .city-stats { display: grid; gap: 0.7rem; }
+  .city-stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .city-stat-label { font-size: 0.73rem; color: var(--ash); }
+  .city-stat-val { font-size: 0.85rem; font-weight: 600; color: var(--black); font-family: 'DM Mono', monospace; }
+
+  /* INFLATION / CPI SECTION */
+  .inflation-section { background: #FDF8F0; color: var(--ink); }
+  .inflation-section .section-title { color: var(--ink); }
+  .inflation-section .section-eyebrow { color: var(--red); }
+  .inflation-section .section-header { border-bottom-color: var(--silver); }
+  .inflation-section .section-meta { color: var(--fog); }
+  .inflation-section .chart-card {
+    background: var(--white); border-color: var(--silver);
+    border-top-color: var(--gold);
+  }
+  .inflation-section .chart-title { color: var(--ink); }
+  .inflation-section .chart-subtitle { color: var(--fog); }
+  .cpi-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .cpi-card {
+    background: var(--white); border: 1px solid var(--silver);
+    border-left: 3px solid var(--gold); padding: 1.2rem;
+  }
+  .cpi-category { font-size: 0.68rem; color: var(--fog); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .cpi-rate { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+  .cpi-rate.hot { color: var(--red); }
+  .cpi-trend { font-size: 0.72rem; color: var(--fog); margin-top: 0.2rem; }
+
+  /* ABOUT / CTA */
+  .cta-section {
+    background: var(--snow);
+    border-top: 3px solid var(--red);
+    padding: 5rem 2.5rem;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 3rem;
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 900; color: var(--ink);
+    line-height: 1.1; max-width: 600px;
+  }
+  .cta-title span { color: var(--red); }
+  .cta-body {
+    color: var(--ash); font-size: 1rem;
+    line-height: 1.65; margin-top: 1rem; max-width: 560px;
+  }
+  .cta-btn {
+    display: inline-block; background: var(--red);
+    color: var(--white); padding: 1rem 2.2rem;
+    font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .cta-btn:hover { background: var(--ink); color: var(--white); }
+  .cta-btn-2 {
+    display: inline-block; background: transparent;
+    color: var(--ink); padding: 1rem 2.2rem;
+    font-weight: 600; font-size: 0.85rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    text-decoration: none; border: 2px solid var(--silver);
+    transition: all 0.2s; margin-top: 0.8rem; white-space: nowrap;
+  }
+  .cta-btn-2:hover { border-color: var(--ink); }
+  .cta-buttons { display: flex; flex-direction: column; gap: 0; }
+
+  /* FOOTER */
+  footer {
+    background: var(--snow);
+    padding: 2.5rem;
+    border-top: 1px solid var(--silver);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-brand { font-family: 'Playfair Display', serif; color: var(--ink); font-size: 1rem; }
+  .footer-brand span { color: var(--red); }
+  .footer-note { font-size: 0.72rem; color: var(--fog); font-family: 'DM Mono', monospace; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-size: 0.75rem; color: var(--ash); text-decoration: none; }
+  .footer-links a:hover { color: var(--red); }
+
+  /* DATA DISCLAIMER */
+  .disclaimer {
+    background: var(--snow); border-top: 1px solid var(--silver);
+    padding: 1rem 2.5rem;
+    font-size: 0.7rem; color: var(--fog); font-family: 'DM Mono', monospace;
+    line-height: 1.5;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .chart-card.wide { grid-column: 1; }
+    .city-grid { grid-template-columns: repeat(2, 1fr); }
+    .cpi-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .city-grid { grid-template-columns: 1fr; }
+    .cpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta-section { grid-template-columns: 1fr; }
+  }
+
+  /* HIGHLIGHT ANNOTATION */
+  .annotation {
+    background: var(--gold); color: var(--black);
+    font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem;
+    font-family: 'DM Mono', monospace; letter-spacing: 0.04em;
+    display: inline-block; margin-left: 0.4rem;
+  }
+  .pulse {
+    display: inline-block; width: 8px; height: 8px;
+    background: #4CAF50; border-radius: 50%;
+    animation: pulse 2s infinite; margin-right: 0.4rem;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-flag"><div class="nf1"></div><div class="nf2"></div><div class="nf3"></div><div class="nf4"></div></div>
+    <span class="nav-brand-text">ABC Consulting <span>MD Data</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#state-overview">Overview</a>
+    <a href="#employment">Employment</a>
+    <a href="#county-data">Counties</a>
+    <a href="#cities">Cities</a>
+    <a href="#inflation">Inflation</a>
+    <a href="#contact" class="nav-cta">Contact Us</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow"><span class="pulse"></span>Live Economic Dashboard — Maryland</div>
+  <h1 class="hero-title">The Maryland <em>Economy,</em> By the Numbers.</h1>
+  <p class="hero-subtitle">Real-time economic intelligence across all <strong>24 Maryland jurisdictions</strong> — tracking employment, income, housing, business activity, and inflation. Curated by economic professionals.</p>
+  <div class="hero-updated">Data sourced: BLS, U.S. Census Bureau, NAR, BEA · Updated: Q1 2025</div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kpi-strip" id="state-overview">
+  <div class="kpi-item">
+    <div class="kpi-label">State GDP</div>
+    <div class="kpi-value">$488B</div>
+    <div class="kpi-change up">+3.1% YoY</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-label">Unemployment</div>
+    <div class="kpi-value">3.2%</div>
+    <div class="kpi-change down">+0.2pp vs. last yr</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-label">Median HH Income</div>
+    <div class="kpi-value">$94K</div>
+    <div class="kpi-change up">+2.8% YoY</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-label">Median Home Price</div>
+    <div class="kpi-value">$392K</div>
+    <div class="kpi-change up">+4.1% YoY</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-label">Total Employed</div>
+    <div class="kpi-value">3.14M</div>
+    <div class="kpi-change up">+1.6% YoY</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-label">CPI (Baltimore Metro)</div>
+    <div class="kpi-value">+3.4%</div>
+    <div class="kpi-change neutral">Moderating</div>
+  </div>
+</div>
+
+<!-- EMPLOYMENT & GDP SECTION -->
+<section id="employment" style="background: var(--snow);">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">01 — Employment & Economic Output</div>
+      <h2 class="section-title">Jobs, Industry & State GDP</h2>
+    </div>
+    <div class="section-meta">Source: BLS LAUS · BEA SAGDP<br>Period: 2024 Annual</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('emp', 'jobs')">Jobs by Sector</button>
+    <button class="tab" onclick="switchTab('emp', 'gdp')">GDP by Industry</button>
+    <button class="tab" onclick="switchTab('emp', 'unemp')">Unemployment Trend</button>
+  </div>
+
+  <div id="emp-jobs" class="tab-panel active">
+    <div class="chart-grid">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Employment by Major Sector — Maryland</div>
+        <div class="chart-subtitle">Thousands of workers, 2024 annual average</div>
+        <div class="chart-container" style="height:320px">
+          <canvas id="sectorChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card reveal">
+        <div class="chart-title">Labor Force Participation</div>
+        <div class="chart-subtitle">Maryland vs. National Average</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="lfpChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card gold-top reveal">
+        <div class="chart-title">Top Employing Counties</div>
+        <div class="chart-subtitle">Civilian employed, thousands (2024)</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="empCountyChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="emp-gdp" class="tab-panel">
+    <div class="chart-grid">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Maryland GDP Contribution by Industry</div>
+        <div class="chart-subtitle">Share of state GDP, 2024 estimate</div>
+        <div class="chart-container" style="height:340px">
+          <canvas id="gdpChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="emp-unemp" class="tab-panel">
+    <div class="chart-grid">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Maryland Unemployment Rate — Monthly Trend</div>
+        <div class="chart-subtitle">Maryland vs. U.S. National rate, 2022–2024</div>
+        <div class="chart-container" style="height:320px">
+          <canvas id="unempTrendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COUNTY DATA -->
+<section id="county-data" class="county-section">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">02 — All 24 Jurisdictions</div>
+      <h2 class="section-title">County-Level Economic Data</h2>
+    </div>
+    <div class="section-meta">Click any column to sort<br>BLS, ACS 5-Year, NAR · 2024</div>
+  </div>
+
+  <div class="county-controls">
+    <input type="text" class="search-input" placeholder="Search jurisdiction..." oninput="filterTable(this.value)" />
+    <select class="metric-select" id="metricSelect" onchange="updateBars()">
+      <option value="unemployment">Highlight: Unemployment Rate</option>
+      <option value="income">Highlight: Median HH Income</option>
+      <option value="home_price">Highlight: Median Home Price</option>
+      <option value="employment">Highlight: Total Employed</option>
+    </select>
+    <button class="sort-btn" onclick="sortTable('name')">A–Z</button>
+    <button class="sort-btn" onclick="sortTable('unemployment')">Unemployment ↕</button>
+    <button class="sort-btn" onclick="sortTable('income')">Income ↕</button>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="county-table" id="countyTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('rank')" class="sorted">#</th>
+          <th onclick="sortTable('name')">Jurisdiction</th>
+          <th onclick="sortTable('unemployment')">Unemp. Rate</th>
+          <th onclick="sortTable('employment')">Employed (000s)</th>
+          <th onclick="sortTable('income')">Median HH Income</th>
+          <th onclick="sortTable('home_price')">Med. Home Price</th>
+          <th onclick="sortTable('gdp_pc')">GDP per Capita</th>
+          <th onclick="sortTable('businesses')">Business Estabs.</th>
+        </tr>
+      </thead>
+      <tbody id="countyTableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- HOUSING -->
+<section id="housing" style="background: var(--snow);">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">03 — Housing & Real Estate</div>
+      <h2 class="section-title">The Maryland Housing Market</h2>
+    </div>
+    <div class="section-meta">Source: NAR, MRIS, Zillow, Bankrate<br>Period: Q4 2024 / Q1 2025</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('hsg', 'prices')">Home Prices</button>
+    <button class="tab" onclick="switchTab('hsg', 'mortgage')">Mortgage Rates</button>
+  </div>
+
+  <div id="hsg-prices" class="tab-panel active">
+    <div class="chart-grid">
+      <div class="chart-card reveal">
+        <div class="chart-title">Median Home Prices by County</div>
+        <div class="chart-subtitle">Top 12 jurisdictions, Q4 2024 ($000s)</div>
+        <div class="chart-container" style="height:320px">
+          <canvas id="homePriceChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card gold-top reveal">
+        <div class="chart-title">Home Price Growth — 5-Year Trend</div>
+        <div class="chart-subtitle">Maryland statewide median ($000s)</div>
+        <div class="chart-container" style="height:320px">
+          <canvas id="homeTrendChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card black-top wide reveal">
+        <div class="chart-title">Housing Affordability Index by Region</div>
+        <div class="chart-subtitle">Index: 100 = median family can afford median home. Above 100 = more affordable.</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="affordChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hsg-mortgage" class="tab-panel">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
+      <div class="kpi-item" style="background:var(--white);border:1px solid var(--silver);border-top:3px solid var(--red);padding:1.2rem 1.4rem;">
+        <div class="kpi-label">MD 30-Year Fixed</div>
+        <div class="kpi-value" style="color:var(--ink);font-size:1.6rem;">6.39%</div>
+        <div class="kpi-change neutral">As of Apr. 2025</div>
+      </div>
+      <div class="kpi-item" style="background:var(--white);border:1px solid var(--silver);border-top:3px solid var(--gold);padding:1.2rem 1.4rem;">
+        <div class="kpi-label">MD 15-Year Fixed</div>
+        <div class="kpi-value" style="color:var(--ink);font-size:1.6rem;">5.79%</div>
+        <div class="kpi-change neutral">As of Apr. 2025</div>
+      </div>
+      <div class="kpi-item" style="background:var(--white);border:1px solid var(--silver);border-top:3px solid var(--silver);padding:1.2rem 1.4rem;">
+        <div class="kpi-label">National 30-Year</div>
+        <div class="kpi-value" style="color:var(--ink);font-size:1.6rem;">6.58%</div>
+        <div class="kpi-change down">MD is 19bps lower</div>
+      </div>
+      <div class="kpi-item" style="background:var(--white);border:1px solid var(--silver);border-top:3px solid var(--silver);padding:1.2rem 1.4rem;">
+        <div class="kpi-label">MD 7-Year ARM</div>
+        <div class="kpi-value" style="color:var(--ink);font-size:1.6rem;">6.375%</div>
+        <div class="kpi-change neutral">As of Apr. 2025</div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card wide reveal">
+        <div class="chart-title">Maryland Mortgage Rates — 2-Year Trend</div>
+        <div class="chart-subtitle">30-year fixed vs. 15-year fixed, Maryland average (%) · Source: Zillow / Bankrate</div>
+        <div class="chart-container" style="height:310px">
+          <canvas id="mortgageTrendChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card reveal">
+        <div class="chart-title">MD vs. National — 30-Year Rate</div>
+        <div class="chart-subtitle">Maryland 30-yr fixed vs. U.S. average, monthly (%)</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="mortgageVsNatChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card gold-top reveal">
+        <div class="chart-title">Monthly Payment Impact</div>
+        <div class="chart-subtitle">Est. monthly P&amp;I on Maryland median-priced home ($392K, 20% down) at varying rates</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="paymentImpactChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:0.7rem;color:var(--fog);font-family:'DM Mono',monospace;margin-top:1rem;">
+      SOURCE: Zillow, Bankrate, Freddie Mac PMMS · Rates shown are averages for conforming loans with 20% down and 740+ credit score. Individual rates vary. Not financial advice.
+    </p>
+  </div>
+</section>
+
+<!-- CITIES -->
+<section id="cities" style="background: var(--white);">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">04 — Major Cities</div>
+      <h2 class="section-title">Urban Economic Profiles</h2>
+    </div>
+    <div class="section-meta">Selected municipalities<br>ACS 2023 · BLS 2024</div>
+  </div>
+  <div class="city-grid">
+    <div class="city-card reveal">
+      <div class="city-name">Baltimore</div>
+      <div class="city-role">Largest City · Independent City</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">568,271</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">5.2%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$55,198</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$215,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">GDP (metro)</span><span class="city-stat-val">$221B</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Frederick</div>
+      <div class="city-role">Frederick County Seat</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">84,423</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">2.6%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$89,400</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$437,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Healthcare/Tech</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Rockville</div>
+      <div class="city-role">Montgomery Co. Seat</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">68,241</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">2.5%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$113,800</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$618,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Biotech/Federal</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Annapolis</div>
+      <div class="city-role">State Capital</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">40,812</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">2.9%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$92,100</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$475,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Government/Tourism</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Gaithersburg</div>
+      <div class="city-role">Montgomery County</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">71,368</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">2.8%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$98,600</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$495,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Technology/NIST</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Hagerstown</div>
+      <div class="city-role">Washington County Seat</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">43,592</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">4.3%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$51,200</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$268,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Logistics/Mfg.</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Bowie</div>
+      <div class="city-role">Prince George's County</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">62,748</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">3.3%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$104,500</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$388,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Federal/Services</span></div>
+      </div>
+    </div>
+    <div class="city-card reveal">
+      <div class="city-name">Salisbury</div>
+      <div class="city-role">Eastern Shore Hub</div>
+      <div class="city-stats">
+        <div class="city-stat-row"><span class="city-stat-label">Population</span><span class="city-stat-val">35,892</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Unemployment</span><span class="city-stat-val">4.5%</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median HH Income</span><span class="city-stat-val">$49,800</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Median Home Price</span><span class="city-stat-val">$258,000</span></div>
+        <div class="city-stat-row"><span class="city-stat-label">Key Sector</span><span class="city-stat-val">Agri./Healthcare</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFLATION -->
+<section id="inflation" class="inflation-section">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">05 — Inflation & Cost of Living</div>
+      <h2 class="section-title">Price Pressures Across Maryland</h2>
+    </div>
+    <div class="section-meta">Source: BLS CPI · Baltimore-Columbia-Towson MSA<br>12-month change through Dec. 2024</div>
+  </div>
+  <div class="cpi-grid reveal">
+    <div class="cpi-card">
+      <div class="cpi-category">All Items CPI</div>
+      <div class="cpi-rate">+3.4%</div>
+      <div class="cpi-trend">Baltimore MSA · Dec. 2024</div>
+    </div>
+    <div class="cpi-card">
+      <div class="cpi-category">Housing / Shelter</div>
+      <div class="cpi-rate hot">+5.2%</div>
+      <div class="cpi-trend">Largest single contributor</div>
+    </div>
+    <div class="cpi-card">
+      <div class="cpi-category">Food (At Home)</div>
+      <div class="cpi-rate">+1.8%</div>
+      <div class="cpi-trend">Easing from 2023 peak</div>
+    </div>
+    <div class="cpi-card">
+      <div class="cpi-category">Energy</div>
+      <div class="cpi-rate">-2.1%</div>
+      <div class="cpi-trend">Gasoline prices falling</div>
+    </div>
+    <div class="cpi-card">
+      <div class="cpi-category">Core CPI (ex. food/energy)</div>
+      <div class="cpi-rate">+3.8%</div>
+      <div class="cpi-trend">Services-driven inflation</div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card wide reveal" style="background: var(--white); border-color: var(--silver); border-top-color: var(--gold);">
+      <div class="chart-title" style="color:var(--ink)">Baltimore MSA CPI — 24-Month Trend</div>
+      <div class="chart-subtitle">All-items CPI % change year-over-year</div>
+      <div class="chart-container" style="height:280px">
+        <canvas id="cpiTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="contact">
+  <div>
+    <h2 class="cta-title">Need Deeper Analysis Behind the Numbers?</h2>
+    <p class="cta-body">Our team of Maryland-based economists provides impact studies, market feasibility analyses, fiscal impact assessments, and strategic economic planning for governments, developers, and private-sector clients across the state.</p>
+  </div>
+  <div class="cta-buttons">
+    <a href="mailto:info@yourconsultancy.com" class="cta-btn">Get in Touch →</a>
+    <a href="#" class="cta-btn-2">Our Services</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">ABC Consulting <span>Economic Advisors</span></div>
+  <div class="footer-note">© 2025 · All data sourced from public federal and state agencies · Not for redistribution</div>
+  <div class="footer-links">
+    <a href="#">Services</a>
+    <a href="#">Methodology</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<div class="disclaimer">
+  DATA SOURCES: Bureau of Labor Statistics (BLS) Local Area Unemployment Statistics (LAUS) · U.S. Census Bureau American Community Survey (ACS) · Bureau of Economic Analysis (BEA) · National Association of Realtors (NAR) · Maryland Association of Realtors · U.S. Energy Information Administration (EIA). All figures are estimates based on latest available data and may be revised. This resource is provided for informational purposes only. ABC Consulting makes no warranty as to the accuracy or completeness of the data presented.
+</div>
+
+<script>
+// ── COUNTY DATA ──────────────────────────────────────────────────
+const counties = [
+  { name: "Montgomery",      unemployment: 2.8, employment: 558, income: 115200, home_price: 560000, gdp_pc: 78400, businesses: 42100 },
+  { name: "Prince George's", unemployment: 3.5, employment: 480, income:  86300, home_price: 368000, gdp_pc: 52800, businesses: 28400 },
+  { name: "Baltimore County",unemployment: 3.1, employment: 432, income:  78400, home_price: 318000, gdp_pc: 56200, businesses: 29800 },
+  { name: "Anne Arundel",    unemployment: 2.8, employment: 318, income:  98100, home_price: 438000, gdp_pc: 64800, businesses: 21700 },
+  { name: "Howard",          unemployment: 2.4, employment: 188, income: 127400, home_price: 568000, gdp_pc: 89200, businesses: 15200 },
+  { name: "Frederick",       unemployment: 2.7, employment: 148, income:  96200, home_price: 432000, gdp_pc: 58400, businesses: 11800 },
+  { name: "Harford",         unemployment: 2.8, employment: 128, income:  95300, home_price: 358000, gdp_pc: 52100, businesses:  9400 },
+  { name: "Carroll",         unemployment: 2.6, employment:  92, income:  97100, home_price: 382000, gdp_pc: 54600, businesses:  7200 },
+  { name: "Charles",         unemployment: 3.1, employment:  88, income: 101200, home_price: 368000, gdp_pc: 49800, businesses:  6400 },
+  { name: "Baltimore City",  unemployment: 5.2, employment: 264, income:  55198, home_price: 215000, gdp_pc: 38600, businesses: 18900 },
+  { name: "St. Mary's",      unemployment: 3.0, employment:  62, income:  94100, home_price: 345000, gdp_pc: 53200, businesses:  4800 },
+  { name: "Washington",      unemployment: 4.1, employment:  78, income:  69400, home_price: 258000, gdp_pc: 41200, businesses:  6100 },
+  { name: "Cecil",           unemployment: 3.4, employment:  52, income:  82300, home_price: 298000, gdp_pc: 48400, businesses:  4200 },
+  { name: "Calvert",         unemployment: 2.9, employment:  48, income: 102100, home_price: 378000, gdp_pc: 58800, businesses:  3600 },
+  { name: "Queen Anne's",    unemployment: 2.7, employment:  28, income:  93400, home_price: 392000, gdp_pc: 56200, businesses:  2200 },
+  { name: "Wicomico",        unemployment: 4.3, employment:  48, income:  62100, home_price: 238000, gdp_pc: 38800, businesses:  4100 },
+  { name: "Allegany",        unemployment: 4.8, employment:  28, income:  51800, home_price: 148000, gdp_pc: 36400, businesses:  2600 },
+  { name: "Worcester",       unemployment: 3.8, employment:  26, income:  66200, home_price: 312000, gdp_pc: 46800, businesses:  3200 },
+  { name: "Talbot",          unemployment: 3.2, employment:  22, income:  72400, home_price: 378000, gdp_pc: 58100, businesses:  2400 },
+  { name: "Garrett",         unemployment: 3.5, employment:  14, income:  57800, home_price: 218000, gdp_pc: 38200, businesses:  1600 },
+  { name: "Kent",            unemployment: 4.1, employment:  10, income:  64800, home_price: 268000, gdp_pc: 44200, businesses:  1100 },
+  { name: "Caroline",        unemployment: 4.2, employment:  14, income:  60100, home_price: 248000, gdp_pc: 36800, businesses:  1300 },
+  { name: "Dorchester",      unemployment: 4.9, employment:  14, income:  53400, home_price: 198000, gdp_pc: 34600, businesses:  1200 },
+  { name: "Somerset",        unemployment: 5.8, employment:   8, income:  44800, home_price: 168000, gdp_pc: 29800, businesses:   900 },
+];
+
+let sortKey = 'employment';
+let sortAsc = false;
+let filterStr = '';
+
+function formatVal(key, val) {
+  if (key === 'unemployment') return val.toFixed(1) + '%';
+  if (key === 'income') return '$' + val.toLocaleString();
+  if (key === 'home_price') return '$' + val.toLocaleString();
+  if (key === 'gdp_pc') return '$' + val.toLocaleString();
+  if (key === 'businesses') return val.toLocaleString();
+  if (key === 'employment') return val.toLocaleString() + 'K';
+  return val;
+}
+
+function getBarColor(key) {
+  if (key === 'unemployment') return 'var(--red)';
+  if (key === 'income') return 'var(--gold)';
+  if (key === 'home_price') return 'var(--black)';
+  return 'var(--red)';
+}
+
+function renderTable() {
+  const metric = document.getElementById('metricSelect').value;
+  let data = counties.filter(c => c.name.toLowerCase().includes(filterStr.toLowerCase()));
+  const maxVal = Math.max(...data.map(c => c[metric]));
+
+  data.sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortAsc ? av - bv : bv - av;
+  });
+
+  const tbody = document.getElementById('countyTableBody');
+  tbody.innerHTML = data.map((c, i) => {
+    const barWidth = Math.round((c[metric] / maxVal) * 100);
+    const rankClass = i < 3 ? 'top3' : '';
+    return `<tr>
+      <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+      <td>${c.name}${c.name === 'Baltimore City' ? ' <span class="annotation">CITY</span>' : ''}</td>
+      <td><div class="bar-cell"><div class="mini-bar" style="width:${Math.round(c.unemployment/6*80)}px; background:${c.unemployment>4.5?'var(--red)':'var(--ash)'}"></div>${c.unemployment.toFixed(1)}%</div></td>
+      <td>${c.employment.toLocaleString()}K</td>
+      <td><div class="bar-cell">${metric==='income'?`<div class="mini-bar gold" style="width:${barWidth*0.8}px"></div>`:''}$${c.income.toLocaleString()}</div></td>
+      <td>$${c.home_price.toLocaleString()}</td>
+      <td>$${c.gdp_pc.toLocaleString()}</td>
+      <td>${c.businesses.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortTable(key) {
+  if (sortKey === key) sortAsc = !sortAsc;
+  else { sortKey = key; sortAsc = false; }
+  renderTable();
+}
+
+function filterTable(val) {
+  filterStr = val;
+  renderTable();
+}
+
+function updateBars() { renderTable(); }
+
+renderTable();
+
+// ── CHARTS ───────────────────────────────────────────────────────
+const MD_RED = '#CC0000';
+const MD_GOLD = '#E8A800';
+const MD_BLACK = '#1A1A1A';
+const MD_GRAY = '#9A9A9A';
+const FONT = 'DM Sans';
+
+// ── WATERMARK PLUGIN ─────────────────────────────────────────────
+// Inject a visible credit line below every chart container
+document.querySelectorAll('.chart-container').forEach(container => {
+  const credit = document.createElement('div');
+  credit.style.cssText = `
+    display: flex; justify-content: flex-end; align-items: center;
+    gap: 0.4rem; margin-top: 0.55rem; padding-top: 0.45rem;
+    border-top: 1px solid #e8e8e8;
+    font-family: 'DM Mono', monospace; font-size: 0.64rem;
+    color: #999; letter-spacing: 0.07em;
+  `;
+  credit.innerHTML = `
+    <span style="display:inline-block;width:10px;height:10px;background:linear-gradient(135deg,#CC0000 50%,#E8A800 50%);border-radius:1px;flex-shrink:0"></span>
+    ABC Consulting &nbsp;·&nbsp; mdecon.com
+  `;
+  container.appendChild(credit);
+});
+
+Chart.defaults.font.family = FONT;
+Chart.defaults.color = '#6A6A6A';
+
+// 1. Sector Employment
+new Chart(document.getElementById('sectorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Govt & Defense','Healthcare & Social','Prof. & Bus. Services','Trade, Trans. & Utilities','Leisure & Hospitality','Financial Activities','Education','Construction','Manufacturing','Information'],
+    datasets: [{
+      data: [572, 448, 398, 322, 248, 162, 138, 118, 94, 72],
+      backgroundColor: [MD_BLACK, MD_RED, MD_RED, MD_GRAY, MD_GRAY, MD_GOLD, MD_GOLD, MD_GRAY, MD_GRAY, MD_GRAY],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}K workers` } } },
+    scales: {
+      x: { grid: { color: '#eee' }, ticks: { callback: v => v + 'K' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// 2. LFP Comparison
+new Chart(document.getElementById('lfpChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Maryland','National'],
+    datasets: [{
+      label: 'Participation Rate',
+      data: [67.2, 62.8],
+      backgroundColor: [MD_RED, MD_GRAY],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { min: 55, max: 75, ticks: { callback: v => v + '%' }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 3. Top employing counties
+new Chart(document.getElementById('empCountyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Montgomery','Pr. George\'s','Balt. Co.','Anne Arundel','Balt. City','Howard','Frederick'],
+    datasets: [{
+      data: [558, 480, 432, 318, 264, 188, 148],
+      backgroundColor: [MD_BLACK, MD_RED, MD_RED, MD_GOLD, MD_GOLD, MD_GRAY, MD_GRAY],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}K employed` } } },
+    scales: {
+      y: { ticks: { callback: v => v + 'K' }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 4. GDP by Industry (doughnut)
+new Chart(document.getElementById('gdpChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Govt & Defense','Prof./Business Svcs','Healthcare','Real Estate','Finance & Insurance','Trade','Information','Construction','Manufacturing','Other'],
+    datasets: [{
+      label: 'Share of GDP (%)',
+      data: [22.1, 16.8, 11.4, 10.2, 8.6, 7.4, 6.8, 5.2, 4.1, 7.4],
+      backgroundColor: [MD_BLACK, MD_RED, MD_RED, MD_GOLD, MD_GOLD, '#888','#aaa','#bbb','#ccc','#ddd'],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}% of state GDP` } } },
+    scales: {
+      x: { ticks: { callback: v => v + '%' }, grid: { color: '#eee' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// 5. Unemployment trend
+const months = ['Jan\'23','Mar','May','Jul','Sep','Nov','Jan\'24','Mar','May','Jul','Sep','Nov','Jan\'25'];
+new Chart(document.getElementById('unempTrendChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Maryland', data: [3.0, 3.1, 2.9, 2.8, 2.9, 3.1, 3.0, 3.1, 3.2, 3.1, 3.2, 3.3, 3.2], borderColor: MD_RED, backgroundColor: 'rgba(204,0,0,0.08)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2 },
+      { label: 'United States', data: [3.4, 3.5, 3.6, 3.5, 3.7, 3.7, 3.7, 3.8, 4.0, 4.2, 4.1, 4.2, 4.1], borderColor: MD_GRAY, backgroundColor: 'rgba(154,154,154,0.05)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2, borderDash: [5,3] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          title: items => items[0].label,
+          label: item => {
+            const label = item.dataset.label === 'Maryland' ? '🟥 Maryland' : '⬜ United States';
+            return `  ${label}: ${item.raw.toFixed(1)}%`;
+          },
+          footer: items => {
+            const md  = items.find(i => i.dataset.label === 'Maryland')?.raw;
+            const us  = items.find(i => i.dataset.label === 'United States')?.raw;
+            if (md != null && us != null) {
+              const diff = (md - us).toFixed(1);
+              const dir  = diff < 0 ? 'below' : 'above';
+              return `MD is ${Math.abs(diff)}pp ${dir} U.S. rate`;
+            }
+          }
+        },
+        titleFont: { family: 'DM Mono', size: 11 },
+        bodyFont:  { family: 'DM Sans',  size: 12 },
+        footerFont:{ family: 'DM Mono', size: 10, style: 'italic' },
+        footerColor: '#aaa',
+        padding: 12,
+        boxPadding: 4
+      }
+    },
+    scales: {
+      y: { min: 2, max: 5, ticks: { callback: v => v + '%' }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 6. Home Prices by County
+new Chart(document.getElementById('homePriceChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Howard','Montgomery','Calvert','Carroll','Anne Arundel','Frederick','Queen Anne\'s','Charles','Harford','Pr. George\'s','Balt. Co.','Cecil'],
+    datasets: [{
+      data: [568, 560, 492, 488, 438, 432, 392, 368, 358, 368, 318, 298],
+      backgroundColor: [MD_BLACK, MD_BLACK, MD_RED, MD_RED, MD_GOLD, MD_GOLD, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY, MD_GRAY],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.raw.toLocaleString() } } },
+    scales: {
+      y: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' }, grid: { color: '#eee' } },
+      x: { grid: { display: false }, ticks: { maxRotation: 45 } }
+    }
+  }
+});
+
+// 7. Home Price Trend
+new Chart(document.getElementById('homeTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ['2020','2021','2022','2023','2024'],
+    datasets: [{
+      label: 'Median Home Price',
+      data: [295, 330, 368, 375, 392],
+      borderColor: MD_GOLD,
+      backgroundColor: 'rgba(232,168,0,0.1)',
+      fill: true, tension: 0.4, pointRadius: 5,
+      pointBackgroundColor: MD_GOLD, borderWidth: 2.5
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.raw + 'K' } } },
+    scales: {
+      y: { ticks: { callback: v => '$' + v + 'K' }, grid: { color: '#eee' }, min: 250 },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 8. Affordability Index
+new Chart(document.getElementById('affordChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Allegany','Washington','Wicomico','Dorchester','Somerset','Baltimore City','Caroline','Garrett','Kent','Worcester','Cecil'],
+    datasets: [{
+      label: 'Affordability Index',
+      data: [148, 118, 112, 108, 104, 98, 96, 92, 88, 84, 82],
+      backgroundColor: ctx => ctx.raw >= 100 ? MD_BLACK : MD_RED,
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' Index: ' + c.raw } } },
+    scales: {
+      y: { min: 60, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 8b. Mortgage Trend — 30yr vs 15yr MD
+const mortgageMonths = ['Jan\'23','Mar','May','Jul','Sep','Nov','Jan\'24','Mar','May','Jul','Sep','Nov','Jan\'25','Mar'];
+new Chart(document.getElementById('mortgageTrendChart'), {
+  type: 'line',
+  data: {
+    labels: mortgageMonths,
+    datasets: [
+      {
+        label: 'MD 30-Year Fixed',
+        data: [6.48, 6.82, 6.91, 6.98, 7.31, 7.44, 6.96, 6.91, 7.06, 6.85, 6.54, 6.72, 6.96, 6.39],
+        borderColor: MD_RED, backgroundColor: 'rgba(204,0,0,0.07)',
+        fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2.5,
+        pointBackgroundColor: MD_RED
+      },
+      {
+        label: 'MD 15-Year Fixed',
+        data: [5.82, 6.08, 6.24, 6.38, 6.72, 6.88, 6.29, 6.22, 6.44, 6.14, 5.89, 6.01, 6.28, 5.79],
+        borderColor: MD_GOLD, backgroundColor: 'rgba(232,168,0,0.06)',
+        fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2.5,
+        pointBackgroundColor: MD_GOLD
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: item => `  ${item.dataset.label}: ${item.raw.toFixed(2)}%`,
+          footer: items => {
+            const r30 = items.find(i => i.dataset.label.includes('30'))?.raw;
+            const r15 = items.find(i => i.dataset.label.includes('15'))?.raw;
+            if (r30 && r15) return `Spread: ${(r30 - r15).toFixed(2)}pp`;
+          }
+        },
+        footerFont: { family: 'DM Mono', size: 10, style: 'italic' },
+        footerColor: '#aaa', padding: 12, boxPadding: 4
+      }
+    },
+    scales: {
+      y: { min: 5, max: 8, ticks: { callback: v => v.toFixed(1) + '%' }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 8c. MD vs National 30-year
+new Chart(document.getElementById('mortgageVsNatChart'), {
+  type: 'line',
+  data: {
+    labels: mortgageMonths,
+    datasets: [
+      {
+        label: 'Maryland',
+        data: [6.48, 6.82, 6.91, 6.98, 7.31, 7.44, 6.96, 6.91, 7.06, 6.85, 6.54, 6.72, 6.96, 6.39],
+        borderColor: MD_RED, backgroundColor: 'transparent',
+        tension: 0.4, pointRadius: 3, borderWidth: 2.5, pointBackgroundColor: MD_RED
+      },
+      {
+        label: 'U.S. National',
+        data: [6.61, 6.96, 7.09, 7.18, 7.49, 7.62, 7.16, 7.09, 7.22, 6.97, 6.72, 6.87, 7.09, 6.58],
+        borderColor: MD_GRAY, backgroundColor: 'transparent',
+        tension: 0.4, pointRadius: 3, borderWidth: 2, borderDash: [5,3], pointBackgroundColor: MD_GRAY
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: item => `  ${item.dataset.label}: ${item.raw.toFixed(2)}%`,
+          footer: items => {
+            const md = items.find(i => i.dataset.label === 'Maryland')?.raw;
+            const us = items.find(i => i.dataset.label === 'U.S. National')?.raw;
+            if (md && us) {
+              const diff = (md - us).toFixed(2);
+              return `MD is ${Math.abs(diff)}pp ${diff < 0 ? 'below' : 'above'} U.S.`;
+            }
+          }
+        },
+        footerFont: { family: 'DM Mono', size: 10, style: 'italic' },
+        footerColor: '#aaa', padding: 12, boxPadding: 4
+      }
+    },
+    scales: {
+      y: { min: 5.5, max: 8, ticks: { callback: v => v.toFixed(1) + '%' }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 8d. Monthly Payment Impact
+const loanAmt = 392000 * 0.80; // 20% down on $392K
+function monthlyPayment(rate, years) {
+  const r = rate / 100 / 12, n = years * 12;
+  return (loanAmt * r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+}
+const rateLabels = ['5.0%','5.5%','6.0%','6.39%\n(Current MD)','7.0%','7.5%','8.0%'];
+const rates      = [5.0,   5.5,   6.0,   6.39,             7.0,   7.5,   8.0];
+new Chart(document.getElementById('paymentImpactChart'), {
+  type: 'bar',
+  data: {
+    labels: ['5.0%','5.5%','6.0%','6.39% ★','7.0%','7.5%','8.0%'],
+    datasets: [
+      {
+        label: '30-Year Fixed',
+        data: rates.map(r => Math.round(monthlyPayment(r, 30))),
+        backgroundColor: rates.map(r => r === 6.39 ? MD_RED : MD_GRAY),
+        borderWidth: 0,
+      },
+      {
+        label: '15-Year Fixed',
+        data: rates.map(r => Math.round(monthlyPayment(r, 15))),
+        backgroundColor: rates.map(r => r === 6.39 ? MD_GOLD : 'rgba(154,154,154,0.35)'),
+        borderWidth: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: c => `  ${c.dataset.label}: $${c.raw.toLocaleString()}/mo` } }
+    },
+    scales: {
+      y: { ticks: { callback: v => '$' + v.toLocaleString() }, grid: { color: '#eee' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 9. CPI Trend
+new Chart(document.getElementById('cpiTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ['Jan\'23','Mar','May','Jul','Sep','Nov','Jan\'24','Mar','May','Jul','Sep','Nov','Dec\'24'],
+    datasets: [
+      { label: 'Baltimore MSA CPI (YoY %)', data: [6.4, 5.8, 5.1, 4.6, 4.2, 3.8, 3.6, 3.5, 3.4, 3.3, 3.5, 3.4, 3.4], borderColor: MD_GOLD, backgroundColor: 'rgba(232,168,0,0.1)', fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2.5 },
+      { label: 'U.S. National CPI', data: [6.4, 5.0, 4.0, 3.2, 3.7, 3.4, 3.1, 3.5, 3.3, 2.9, 2.4, 2.7, 2.9], borderColor: '#555', backgroundColor: 'transparent', tension: 0.4, pointRadius: 3, borderWidth: 1.5, borderDash: [5,3] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { color: '#6A6A6A' } } },
+    scales: {
+      y: { ticks: { callback: v => v + '%', color: '#888' }, grid: { color: '#eee' } },
+      x: { grid: { display: false }, ticks: { color: '#888' } }
+    }
+  }
+});
+
+// ── TABS ──────────────────────────────────────────────────────────
+function switchTab(group, id) {
+  document.querySelectorAll(`[id^="${group}-"]`).forEach(p => p.classList.remove('active'));
+  document.getElementById(`${group}-${id}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
